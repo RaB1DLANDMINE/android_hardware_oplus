@@ -4,10 +4,11 @@ binder_use(mdm_feature)
 init_daemon_domain(mdm_feature)
 
 allow mdm_feature block_device:dir r_dir_perms;
+allow mdm_feature mdmfeature_device:chr_file rw_file_perms;
 allow mdm_feature mnt_vendor_file:dir search;
 allow mdm_feature oplus_reserve_file_type:dir search;
 allow mdm_feature vendor_modem_efs_partition_device:blk_file r_file_perms;
-allow mdm_feature vendor_reserve_partition:blk_file r_file_perms;
+allow mdm_feature vendor_reserve_partition:blk_file rw_file_perms;
 allow mdm_feature vendor_sysfs_soc_sensitive:file r_file_perms;
 
 set_prop(mdm_feature, vendor_nw_exported_system_prop)
