@@ -13,7 +13,7 @@ public class DynamicFrameRateManager {
     public static final int LOW_PRECISION_FRAME_RATE = 120;
     public static final int START_VELOCITY = -1;
 
-    private DynamicFrameRateManager() {
+    public DynamicFrameRateManager() {
     }
 
     public static boolean setFrameRate(View view, int frameRate, Bundle bundle) {
