@@ -10,6 +10,8 @@ hal_client_domain(hal_camera_default, vendor_hal_oplus_performance)
 hal_client_domain(hal_camera_default, vendor_hal_oplus_urcc)
 hal_client_domain(hal_camera_default, vendor_hal_qspmhal)
 
+hal_client_domain(hal_camera_default, hal_power)
+
 add_service(hal_camera_default, hal_oplus_aon_aidl_service)
 
 allow hal_camera_default self:capability ipc_lock;
@@ -38,7 +40,7 @@ allow hal_camera_default vendor_camera_update_data_file:file create_file_perms;
 allow hal_camera_default vendor_explorer_data_file:dir rw_dir_perms;
 allow hal_camera_default vendor_explorer_data_file:file create_file_perms;
 
-allow hal_camera_default vendor_persist_camera_file:dir w_dir_perms;
+allow hal_camera_default vendor_persist_camera_file:dir rw_dir_perms;
 allow hal_camera_default vendor_persist_camera_file:file create_file_perms;
 allow hal_camera_default vendor_persist_explorer_file:dir w_dir_perms;
 allow hal_camera_default vendor_persist_explorer_file:file create_file_perms;
