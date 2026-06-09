@@ -1,0 +1,92 @@
+package com.oplus.os;
+
+import android.os.Build;
+import android.os.SystemProperties;
+import android.text.TextUtils;
+
+public class OplusBuild {
+    public static final int UNKNOWN = 0;
+
+    public static final int OplusOS_1_0 = 1;
+    public static final int OplusOS_1_2 = 2;
+    public static final int OplusOS_1_4 = 3;
+    public static final int OplusOS_2_0 = 4;
+    public static final int OplusOS_2_1 = 5;
+    public static final int OplusOS_3_0 = 6;
+    public static final int OplusOS_3_1 = 7;
+    public static final int OplusOS_3_2 = 8;
+    public static final int OplusOS_5_0 = 9;
+    public static final int OplusOS_5_1 = 10;
+    public static final int OplusOS_5_2 = 11;
+    public static final int OplusOS_6_0 = 12;
+    public static final int OplusOS_6_1 = 13;
+    public static final int OplusOS_6_2 = 14;
+    public static final int OplusOS_6_7 = 15;
+    public static final int OplusOS_7_0 = 16;
+    public static final int OplusOS_7_1 = 17;
+    public static final int OplusOS_7_2 = 18;
+    public static final int OplusOS_11_0 = 19;
+    public static final int OplusOS_11_1 = 20;
+    public static final int OplusOS_11_2 = 21;
+    public static final int OplusOS_11_3 = 22;
+    public static final int OplusOS_12_0 = 23;
+    public static final int OplusOS_12_1 = 24;
+    public static final int OplusOS_12_2 = 25;
+    public static final int OplusOS_13_0 = 26;
+    public static final int OplusOS_13_1 = 27;
+
+    public static final String MARKET =
+            SystemProperties.get("ro.vendor.oplus.market.name", Build.MODEL);
+
+    private static final String[] VERSIONS = {
+            "V1.0", "V1.2", "V1.4", "V2.0", "V2.1", "V3.0", "V3.1", "V3.2",
+            "V5.0", "V5.1", "V5.2", "V6.0", "V6.1", "V6.2", "V6.7", "V7",
+            "V7.1", "V7.2", "V11", "V11.1", "V11.2", "V11.3", "V12",
+            "V12.1", "V12.2", "V13", "V13.1", "V13.1.1", "V13.2", "V14.0",
+            "V14.0.1", "V14.0.2", "V14.1.0", "V15.0.0", null
+    };
+
+    public static final class OsdkVersionCodes {
+        public static final int OS_13_0 = 26;
+        public static final int OS_13_1 = 27;
+        public static final int OS_13_1_1 = 28;
+        public static final int OS_13_2 = 29;
+        public static final int OS_14_0 = 30;
+        public static final int OS_14_0_1 = 31;
+        public static final int OS_14_0_2 = 32;
+        public static final int OS_14_1_0 = 33;
+        public static final int OS_15_0_0 = 34;
+        public static final int OS_15_0_1 = 35;
+        public static final int OS_15_0_2 = 36;
+        public static final int OS_16_0 = 37;
+    }
+
+    public static class VERSION {
+        public static final String RELEASE =
+                SystemProperties.get("ro.build.version.oplusrom", "UNKNOWN");
+        public static final int SDK_VERSION =
+                SystemProperties.getInt("ro.build.version.oplus.api", OplusBuild.getOsVersion());
+        public static final int SDK_SUB_VERSION =
+                SystemProperties.getInt("ro.build.version.oplus.sub_api", 1);
+    }
+
+    public static int getOplusOSVERSION() {
+        int osVersion = VERSION.SDK_VERSION;
+        if (osVersion != 0 && osVersion > OsdkVersionCodes.OS_14_1_0) {
+            return osVersion;
+        }
+        return getOsVersion();
+    }
+
+    private static int getOsVersion() {
+        String release = VERSION.RELEASE;
+        String osVersion = "V" + release;
+        for (int i = VERSIONS.length - 2; i >= 0; i--) {
+            if (!TextUtils.isEmpty(release)
+                    && (release.startsWith(VERSIONS[i]) || osVersion.startsWith(VERSIONS[i]))) {
+                return i + 1;
+            }
+        }
+        return OplusOS_12_1;
+    }
+}
