@@ -8,7 +8,10 @@ import android.view.accessibility.AccessibilityNodeInfo;
 public class View {
     public static final int DRAG_FLAG_REQUEST_SURFACE_FOR_RETURN_ANIMATION = 2048;
 
+    private final android.view.View mView;
+
     public View(android.view.View view) {
+        mView = view;
     }
 
     public static boolean isVisibleToUser(android.view.View target) {
@@ -24,7 +27,11 @@ public class View {
     }
 
     public static ViewRootImpl getViewRootImpl(android.view.View target) {
-        return null;
+        if (target == null) {
+            return null;
+        }
+        android.view.ViewRootImpl vri = target.getViewRootImpl();
+        return vri == null ? null : new ViewRootImpl(vri);
     }
 
     public static void notifyViewAccessibilityStateChangedIfNeeded(android.view.View target, int changeType) {
@@ -82,7 +89,11 @@ public class View {
     }
 
     public ViewRootImpl getViewRootImpl() {
-        return null;
+        if (mView == null) {
+            return null;
+        }
+        android.view.ViewRootImpl vri = mView.getViewRootImpl();
+        return vri == null ? null : new ViewRootImpl(vri);
     }
 
     public void notifyViewAccessibilityStateChangedIfNeeded(int changeType) {
