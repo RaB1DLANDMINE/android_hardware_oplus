@@ -1,7 +1,9 @@
 package com.oplus.os;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.SystemProperties;
+import android.provider.Settings;
 import android.text.TextUtils;
 
 public class OplusBuild {
@@ -34,6 +36,16 @@ public class OplusBuild {
     public static final int OplusOS_12_2 = 25;
     public static final int OplusOS_13_0 = 26;
     public static final int OplusOS_13_1 = 27;
+    public static final int OplusOS_13_1_1 = 28;
+    public static final int OplusOS_13_2 = 29;
+    public static final int OplusOS_14_0 = 30;
+    public static final int OplusOS_14_0_1 = 31;
+    public static final int OplusOS_14_0_2 = 32;
+    public static final int OplusOS_14_1_0 = 33;
+    public static final int OplusOS_15_0_0 = 34;
+    public static final int OplusOS_15_0_1 = 35;
+    public static final int OplusOS_15_0_2 = 36;
+    public static final int OplusOS_16_0 = 37;
 
     public static final String MARKET =
             SystemProperties.get("ro.vendor.oplus.market.name", Build.MODEL);
@@ -43,7 +55,8 @@ public class OplusBuild {
             "V5.0", "V5.1", "V5.2", "V6.0", "V6.1", "V6.2", "V6.7", "V7",
             "V7.1", "V7.2", "V11", "V11.1", "V11.2", "V11.3", "V12",
             "V12.1", "V12.2", "V13", "V13.1", "V13.1.1", "V13.2", "V14.0",
-            "V14.0.1", "V14.0.2", "V14.1.0", "V15.0.0", null
+            "V14.0.1", "V14.0.2", "V14.1.0", "V15.0.0", "V15.0.1",
+            "V15.0.2", "V16.0.0", null
     };
 
     public static final class OsdkVersionCodes {
@@ -59,6 +72,9 @@ public class OplusBuild {
         public static final int OS_15_0_1 = 35;
         public static final int OS_15_0_2 = 36;
         public static final int OS_16_0 = 37;
+
+        private OsdkVersionCodes() {
+        }
     }
 
     public static class VERSION {
@@ -78,15 +94,66 @@ public class OplusBuild {
         return getOsVersion();
     }
 
+    public static boolean setDeviceName(String name) {
+        return true;
+    }
+
+    public static String getDeviceName() {
+        return Build.MODEL;
+    }
+
+    public static String getDeviceName(Context context) {
+        if (context == null) {
+            return getDeviceName();
+        }
+
+        String name = Settings.Global.getString(
+                context.getContentResolver(),
+                Settings.Global.DEVICE_NAME
+        );
+
+        if (TextUtils.isEmpty(name) || name.trim().isEmpty()) {
+            return Build.MODEL;
+        }
+
+        return name;
+    }
+
+    public static void putDeviceName(Context context, String deviceName) {
+        if (context == null || deviceName == null) {
+            return;
+        }
+
+        Settings.Global.putString(
+                context.getContentResolver(),
+                Settings.Global.DEVICE_NAME,
+                deviceName
+        );
+    }
+
+    public static void setDeviceName(Context context, String deviceName) {
+        putDeviceName(context, deviceName);
+    }
+
+    public static String getVersionProp(String property) {
+        if (TextUtils.isEmpty(property)) {
+            return VERSION.RELEASE;
+        }
+
+        return SystemProperties.get(property, VERSION.RELEASE);
+    }
+
     private static int getOsVersion() {
         String release = VERSION.RELEASE;
         String osVersion = "V" + release;
+
         for (int i = VERSIONS.length - 2; i >= 0; i--) {
             if (!TextUtils.isEmpty(release)
                     && (release.startsWith(VERSIONS[i]) || osVersion.startsWith(VERSIONS[i]))) {
                 return i + 1;
             }
         }
+
         return OplusOS_12_1;
     }
 }
