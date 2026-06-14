@@ -3,17 +3,43 @@ package com.oplus.settings;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.UserHandle;
+import android.util.Log;
 
+/* loaded from: classes4.dex */
 public abstract class OplusSettingsChangeListener extends ContentObserver {
+    public abstract void onSettingsChange(boolean z, String str, int i);
+
     public OplusSettingsChangeListener(Handler handler) {
         super(handler);
     }
 
-    @Override
-    public void onChange(boolean selfChange, Uri uri) {
-        String path = uri != null ? uri.getPath() : null;
-        onSettingsChange(selfChange, path, android.os.UserHandle.myUserId());
+    @Override // android.database.ContentObserver
+    public final void onChange(boolean selfChange) {
     }
 
-    public abstract void onSettingsChange(boolean selfChange, String path, int userId);
+    @Override // android.database.ContentObserver
+    public final void onChange(boolean selfChange, Uri uri) {
+        filterUserId(selfChange, uri);
+    }
+
+    @Override // android.database.ContentObserver
+    public final void onChange(boolean selfChange, Uri uri, int userId) {
+        filterUserId(selfChange, uri);
+    }
+
+    private void filterUserId(boolean selfChange, Uri uri) {
+        try {
+            int id = Integer.valueOf(uri.getQueryParameter(OplusSettingsConfig.PARAMS_USER_ID)).intValue();
+            if (OplusSettings.isSystemProcess()) {
+                onSettingsChange(selfChange, uri.getPath(), id);
+            } else if (id == UserHandle.myUserId()) {
+                onSettingsChange(selfChange, uri.getPath(), id);
+            } else {
+                Log.w("CSListener", "filterUserId else selfChange=" + selfChange + " uri=" + uri.toString());
+            }
+        } catch (Exception e) {
+            Log.e("CSListener", "filterUserId ERROR selfChange=" + selfChange + " uri=" + uri.toString(), e);
+        }
+    }
 }

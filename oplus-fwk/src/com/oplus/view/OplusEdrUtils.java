@@ -8,6 +8,7 @@ import android.view.SurfaceControl;
 import android.view.SurfaceView;
 import android.view.View;
 
+/* Stub implementation - OxygenOS SurfaceControl EDR extensions not available */
 public final class OplusEdrUtils {
     public static final int DOLBY_OFF_WITHOUT_ANIMATION = 131073;
     public static final int DOLBY_OFF_WITH_ANIMATION = 131072;
@@ -20,6 +21,8 @@ public final class OplusEdrUtils {
     public static final int LOCALHDR_OFF_WITH_ANIMATION = 65537;
     public static final int LOCALHDR_ON_WITHOUT_ANIMATION = 65792;
     public static final int LOCALHDR_ON_WITH_ANIMATION = 65793;
+    public static final int SIZE_DISPLAY_MAX = 16;
+    public static final int SIZE_POSITION_MAX = 2;
 
     public static class OplusEdrParameters {
         public int[] displayPosition;
@@ -40,9 +43,6 @@ public final class OplusEdrUtils {
         public float[] fGainmapRatioMin = {1.0f, 1.0f, 1.0f, 1.0f};
         public float[] fGainmapRatioMax = {2.0f, 2.0f, 2.0f, 1.0f};
         public float[] fGainmapGamma = {1.0f, 1.0f, 1.0f, 1.0f};
-    }
-
-    private OplusEdrUtils() {
     }
 
     public static SurfaceControl getSurfaceControl(View view) {
@@ -66,20 +66,12 @@ public final class OplusEdrUtils {
     }
 
     public static int getEdrFeatureVersion(int feature) {
-        if (feature == EDR_FEATURE_LOCALHDR_VERSION) {
-            return getLocalHdrVersion();
+        switch (feature) {
+            case 0: return SystemProperties.getInt("persist.sys.feature.localhdr_version", -1);
+            case 1: return SystemProperties.getInt("persist.sys.feature.dolby_vision_app", -1);
+            case 5: return SystemProperties.getInt("persist.sys.feature.hdr_vision_app", -1);
+            default: return -1;
         }
-        if (feature == EDR_FEATURE_DOLBY_VERSION) {
-            return getDolbyEdrVersion();
-        }
-        if (feature == EDR_FEATURE_HDR_VERSION) {
-            return SystemProperties.getInt("persist.sys.feature.hdr_vision_app", -1);
-        }
-        return -1;
-    }
-
-    public static boolean isUHDRSupport() {
-        return SystemProperties.getBoolean("persist.sys.feature.uhdr.support", false);
     }
 
     public static boolean setEdrFlags(SurfaceControl sc, SurfaceControl.Transaction transaction, int flags) {
@@ -100,6 +92,10 @@ public final class OplusEdrUtils {
 
     public static boolean setEdrViewTransform(SurfaceControl sc, SurfaceControl.Transaction transaction, OplusEdrParameters para, int index) {
         return false;
+    }
+
+    public static boolean isUHDRSupport() {
+        return SystemProperties.getBoolean("persist.sys.feature.uhdr.support", false);
     }
 
     public static boolean setEdrGainmapInfo(SurfaceControl sc, SurfaceControl.Transaction transaction, OplusSkGainmapInfo info, int index) {

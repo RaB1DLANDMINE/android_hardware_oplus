@@ -9,7 +9,9 @@ import com.oplus.app.IOplusProtectConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+/* loaded from: classes.dex */
 public class OplusWhiteListManager {
+    private static final boolean DEBUG = false;
     private static final long MAX_PROTECT_SELF_TIMEOUT = 10800000;
     private static final long MIN_PROTECT_SELF_TIMEOUT = 60000;
     private static final String REASON_LEGACY = "legacy_call";
@@ -28,11 +30,11 @@ public class OplusWhiteListManager {
     public static final int TYPE_SCREENOFF_AUDIO_OUT = 7;
     public static final int TYPE_SCREENOFF_POSSIBLE_AUDIO_OUT = 8;
     public static final int TYPE_SPECIFIG_PKG_PROTECT = 3;
-    private final Context mContext;
-    private final OplusActivityManager mOplusActivityManager = new OplusActivityManager();
+    private Context mContext;
+    private OplusActivityManager mOplusActivityManager = new OplusActivityManager();
 
     public OplusWhiteListManager(Context context) {
-        mContext = context;
+        this.mContext = context;
     }
 
     public ArrayList<String> getGlobalWhiteList() {
@@ -42,7 +44,7 @@ public class OplusWhiteListManager {
     public ArrayList<String> getGlobalWhiteList(int type) {
         ArrayList<String> resultList = new ArrayList<>();
         try {
-            List<String> tempList = mOplusActivityManager.getGlobalPkgWhiteList(type);
+            List<String> tempList = this.mOplusActivityManager.getGlobalPkgWhiteList(type);
             if (!ArrayUtils.isEmpty(tempList)) {
                 resultList.addAll(tempList);
             }
@@ -54,7 +56,7 @@ public class OplusWhiteListManager {
     public ArrayList<String> getStageProtectListFromPkg(String callerPkg, int type) {
         ArrayList<String> resultList = new ArrayList<>();
         try {
-            List<String> tempList = mOplusActivityManager.getStageProtectListFromPkg(callerPkg, type);
+            List<String> tempList = this.mOplusActivityManager.getStageProtectListFromPkg(callerPkg, type);
             if (!ArrayUtils.isEmpty(tempList)) {
                 resultList.addAll(tempList);
             }
@@ -66,7 +68,7 @@ public class OplusWhiteListManager {
     public List<String> getStageProtectListFromPkgAsUser(String callerPkg, int type, int userId) {
         List<String> resultList = new ArrayList<>();
         try {
-            List<String> tempList = mOplusActivityManager.getStageProtectListFromPkgAsUser(callerPkg, type, userId);
+            List<String> tempList = this.mOplusActivityManager.getStageProtectListFromPkgAsUser(callerPkg, type, userId);
             if (!ArrayUtils.isEmpty(tempList)) {
                 resultList.addAll(tempList);
             }
@@ -78,7 +80,7 @@ public class OplusWhiteListManager {
     public List<String> getStageProtectList(int type) {
         List<String> resultList = new ArrayList<>();
         try {
-            List<String> tempList = mOplusActivityManager.getStageProtectList(type);
+            List<String> tempList = this.mOplusActivityManager.getStageProtectList(type);
             if (!ArrayUtils.isEmpty(tempList)) {
                 resultList.addAll(tempList);
             }
@@ -90,7 +92,7 @@ public class OplusWhiteListManager {
     public List<String> getStageProtectListAsUser(int type, int userId) {
         List<String> resultList = new ArrayList<>();
         try {
-            List<String> tempList = mOplusActivityManager.getStageProtectListAsUser(type, userId);
+            List<String> tempList = this.mOplusActivityManager.getStageProtectListAsUser(type, userId);
             if (!ArrayUtils.isEmpty(tempList)) {
                 resultList.addAll(tempList);
             }
@@ -102,7 +104,7 @@ public class OplusWhiteListManager {
     public List<String> getGlobalProcessWhiteList() {
         List<String> resultList = new ArrayList<>();
         try {
-            List<String> tempList = mOplusActivityManager.getGlobalProcessWhiteList();
+            List<String> tempList = this.mOplusActivityManager.getGlobalProcessWhiteList();
             if (!ArrayUtils.isEmpty(tempList)) {
                 resultList.addAll(tempList);
             }
@@ -120,12 +122,7 @@ public class OplusWhiteListManager {
         addStageProtectInfo(pkg, null, reason, timeout, connection);
     }
 
-    public void addStageProtectInfo(
-            String pkg,
-            List<String> processList,
-            String reason,
-            long timeout,
-            IOplusProtectConnection connection) {
+    public void addStageProtectInfo(String pkg, List<String> processList, String reason, long timeout, IOplusProtectConnection connection) {
         if (TextUtils.isEmpty(reason)) {
             throw new IllegalArgumentException("reason is null or length equals 0");
         }
@@ -137,8 +134,7 @@ public class OplusWhiteListManager {
             throw new IllegalArgumentException("timeout <= 0");
         }
         try {
-            mOplusActivityManager.addStageProtectInfo(
-                    mContext.getPackageName(), pkg, processList, reason, timeout, connection);
+            this.mOplusActivityManager.addStageProtectInfo(this.mContext.getPackageName(), pkg, processList, reason, timeout, connection);
         } catch (Exception e) {
             Log.e(TAG, "Error adding stage protect ", e);
         }
@@ -150,7 +146,7 @@ public class OplusWhiteListManager {
             return;
         }
         try {
-            mOplusActivityManager.removeStageProtectInfo(pkg, mContext.getPackageName());
+            this.mOplusActivityManager.removeStageProtectInfo(pkg, this.mContext.getPackageName());
         } catch (Exception e) {
             Log.e(TAG, "Error remove stage protect ", e);
         }

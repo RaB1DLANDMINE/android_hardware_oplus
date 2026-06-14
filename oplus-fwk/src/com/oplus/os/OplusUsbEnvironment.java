@@ -14,315 +14,278 @@ import android.os.storage.StorageEventListener;
 import android.os.storage.StorageManager;
 import android.os.storage.VolumeInfo;
 import android.util.Log;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OplusUsbEnvironment extends Environment {
-    private static final String TAG = "OppoUsbEnvironmentSys";
-
     private static final String DEFAULT_INTERNAL_PATH = "/storage/emulated/0";
+    public static final int EXTERNAL = 2;
+    public static final int INTERNAL = 1;
     private static final String MULTIAPP_INTERNAL_PATH = "/storage/emulated/999";
-
+    public static final int NONE = -1;
+    public static final int OTG = 3;
+    private static final String TAG = "OppoUsbEnvironmentSys";
+    private static boolean sInited = false;
+    private static String sInternalSdDir = "/storage/emulated/0";
+    private static String sExternalSdDir = null;
+    private static ArrayList<String> sOtgPathes = new ArrayList<>();
+    private static IStorageManager sMountService = null;
+    private static Object sLock = new Object();
     public static final String FILE_SEPARATOR = "/";
 
-    public static final int NONE = -1;
-    public static final int INTERNAL = 1;
-    public static final int EXTERNAL = 2;
-    public static final int OTG = 3;
-
-    private static boolean sInited = false;
-    private static boolean sListenerRegistered = false;
-
-    private static String sInternalSdDir = DEFAULT_INTERNAL_PATH;
-    private static String sExternalSdDir = null;
-    private static final ArrayList<String> sOtgPathes = new ArrayList<>();
-
-    private static IStorageManager sMountService = null;
-    private static final Object sLock = new Object();
-
-    private static final BroadcastReceiver sVolumeStateReceiver = new BroadcastReceiver() {
+    private static BroadcastReceiver sVolumeStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            synchronized (sLock) {
-                if (intent == null) {
-                    return;
-                }
-
+            synchronized (OplusUsbEnvironment.sLock) {
                 String action = intent.getAction();
                 int state = intent.getIntExtra("android.os.storage.extra.VOLUME_STATE", -1);
                 String id = intent.getStringExtra("android.os.storage.extra.VOLUME_ID");
-
-                if (state == VolumeInfo.STATE_MOUNTED || state == VolumeInfo.STATE_UNMOUNTED) {
-                    Log.d(TAG, "onReceive: action=" + action + ", state=" + state + ", id=" + id);
-                    getVolumesLocked();
+                if (state == 2 || state == 0) {
+                    Log.d(OplusUsbEnvironment.TAG, "onReceive: action:" + action + ", state=" + state + ", id=" + id);
+                    OplusUsbEnvironment.getVolumes();
                 }
             }
         }
     };
-
-    private static final StorageEventListener sStorageListener = new StorageEventListener() {
-        @Override
+    private static StorageEventListener sStorageListener = new StorageEventListener() {
         public void onVolumeStateChanged(VolumeInfo vol, int oldState, int newState) {
-            synchronized (sLock) {
-                if (vol == null) {
-                    return;
-                }
-
+            synchronized (OplusUsbEnvironment.sLock) {
                 DiskInfo diskInfo = vol.getDisk();
                 if (diskInfo == null) {
                     return;
                 }
-
                 String path = vol.path;
-                if (oldState != VolumeInfo.STATE_MOUNTED && newState == VolumeInfo.STATE_MOUNTED) {
+                if (oldState != 2 && newState == 2) {
                     if (diskInfo.isSd() && path != null) {
-                        sExternalSdDir = path;
-                        Log.d(TAG, "onVolumeStateChanged: sd mount. sExternalSdDir=" + sExternalSdDir);
+                        String unused = OplusUsbEnvironment.sExternalSdDir = path;
+                        Log.d(OplusUsbEnvironment.TAG, "onVolumeStateChanged: sd mount. sExternalSdDir=" + OplusUsbEnvironment.sExternalSdDir);
                     }
-
-                    if (diskInfo.isUsb() && path != null && !sOtgPathes.contains(path)) {
-                        sOtgPathes.add(path);
-                        Log.d(TAG, "onVolumeStateChanged: sOtgPathes.add=" + path);
+                    if (diskInfo.isUsb() && path != null && !OplusUsbEnvironment.sOtgPathes.contains(path)) {
+                        OplusUsbEnvironment.sOtgPathes.add(path);
+                        Log.d(OplusUsbEnvironment.TAG, "onVolumeStateChanged: sOtgPathes.add=" + path);
                     }
-                } else if (newState != VolumeInfo.STATE_MOUNTED && oldState == VolumeInfo.STATE_MOUNTED) {
+                } else if (newState != 2 && oldState == 2) {
                     if (diskInfo.isSd()) {
-                        sExternalSdDir = null;
-                        Log.d(TAG, "onVolumeStateChanged: sd unmount. sExternalSdDir=" + sExternalSdDir);
+                        String unused2 = OplusUsbEnvironment.sExternalSdDir = null;
+                        Log.d(OplusUsbEnvironment.TAG, "onVolumeStateChanged: sd unmount. sExternalSdDir=" + OplusUsbEnvironment.sExternalSdDir);
                     }
-
-                    if (diskInfo.isUsb() && path != null && sOtgPathes.contains(path)) {
-                        sOtgPathes.remove(path);
-                        Log.d(TAG, "onVolumeStateChanged: sOtgPathes.remove=" + path);
+                    if (diskInfo.isUsb() && path != null && OplusUsbEnvironment.sOtgPathes.contains(path)) {
+                        OplusUsbEnvironment.sOtgPathes.remove(path);
+                        Log.d(OplusUsbEnvironment.TAG, "onVolumeStateChanged: sOtgPathes.remove=" + path);
                     }
                 }
             }
         }
     };
 
-    private OplusUsbEnvironment() {
-    }
-
     private static void update(Context context) {
-        synchronized (sLock) {
-            if (sMountService == null) {
-                sMountService = IStorageManager.Stub.asInterface(ServiceManager.getService("mount"));
+        if (sMountService == null) {
+            sMountService = IStorageManager.Stub.asInterface(ServiceManager.getService("mount"));
+        }
+        if (!sInited) {
+            boolean hasPerm = true;
+            sInited = true;
+            getVolumes();
+            Context contextApp = context.getApplicationContext();
+            if (context.checkSelfPermission("android.permission.WRITE_MEDIA_STORAGE") != 0) {
+                hasPerm = false;
             }
-
-            if (!sInited) {
-                sInited = true;
-                getVolumesLocked();
-            }
-
-            if (context == null || sListenerRegistered) {
+            if (contextApp != null && hasPerm) {
+                IntentFilter filter = new IntentFilter();
+                filter.addAction("android.os.storage.action.VOLUME_STATE_CHANGED");
+                contextApp.registerReceiver(sVolumeStateReceiver, filter);
+                Log.d(TAG, "update: registerReceiver sVolumeStateReceiver");
                 return;
             }
-
-            Context appContext = context.getApplicationContext();
-            if (appContext == null) {
-                appContext = context;
-            }
-
-            boolean hasWriteMediaStorage =
-                    context.checkSelfPermission("android.permission.WRITE_MEDIA_STORAGE") == 0;
-
-            if (hasWriteMediaStorage) {
-                try {
-                    IntentFilter filter = new IntentFilter();
-                    filter.addAction("android.os.storage.action.VOLUME_STATE_CHANGED");
-                    appContext.registerReceiver(sVolumeStateReceiver, filter);
-                    sListenerRegistered = true;
-                    Log.d(TAG, "update: registered volume state receiver");
-                    return;
-                } catch (Throwable t) {
-                    Log.w(TAG, "update: failed to register volume receiver", t);
-                }
-            }
-
-            try {
-                StorageManager storageManager =
-                        (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
-                if (storageManager != null) {
-                    storageManager.registerListener(sStorageListener);
-                    sListenerRegistered = true;
-                    Log.d(TAG, "update: registered storage listener");
-                }
-            } catch (Throwable t) {
-                Log.w(TAG, "update: failed to register storage listener", t);
+            Log.d(TAG, "update: hasPerm WRITE_MEDIA_STORAGE=" + hasPerm + ", contextApp=" + contextApp);
+            StorageManager sm = (StorageManager) context.getSystemService("storage");
+            if (sm != null) {
+                sm.registerListener(sStorageListener);
+                Log.d(TAG, "update: registerListener sStorageListener");
             }
         }
     }
 
     public static File getInternalSdDirectory(Context context) {
-        String path = getInternalPath(context);
-        return path == null ? null : new File(path);
+        String path;
+        synchronized (sLock) {
+            update(context);
+            path = sInternalSdDir;
+        }
+        if (path == null) {
+            return null;
+        }
+        return new File(path);
     }
 
     public static File getExternalSdDirectory(Context context) {
-        String path = getExternalPath(context);
-        return path == null ? null : new File(path);
+        String path;
+        synchronized (sLock) {
+            update(context);
+            path = sExternalSdDir;
+        }
+        if (path == null) {
+            return null;
+        }
+        return new File(path);
     }
 
     public static String getInternalSdState(Context context) {
-        return getVolumeState(context, getInternalPath(context));
+        String path;
+        StorageManager sm;
+        synchronized (sLock) {
+            update(context);
+            path = sInternalSdDir;
+        }
+        if (path != null && (sm = (StorageManager) context.getSystemService("storage")) != null) {
+            return sm.getVolumeState(path);
+        }
+        return "unknown";
     }
 
     public static String getExternalSdState(Context context) {
-        return getVolumeState(context, getExternalPath(context));
+        String path;
+        StorageManager sm;
+        synchronized (sLock) {
+            update(context);
+            path = sExternalSdDir;
+        }
+        if (path != null && (sm = (StorageManager) context.getSystemService("storage")) != null) {
+            return sm.getVolumeState(path);
+        }
+        return "unknown";
     }
 
     public static boolean isExternalSDRemoved(Context context) {
-        String path = getExternalPath(context);
+        String path;
+        synchronized (sLock) {
+            update(context);
+            path = sExternalSdDir;
+        }
         if (path == null) {
             return true;
         }
-
-        String state = getVolumeState(context, path);
+        String state = "unknown";
+        StorageManager sm = (StorageManager) context.getSystemService("storage");
+        if (sm != null) {
+            state = sm.getVolumeState(path);
+        }
         Log.i(TAG, "isExternalSDRemoved: the state of volume is: " + state);
         return Environment.MEDIA_REMOVED.equals(state);
     }
 
     public static boolean isNestMounted() {
+        boolean result;
+        String str;
         synchronized (sLock) {
-            if (sInternalSdDir == null || sExternalSdDir == null) {
-                return false;
+            result = false;
+            String str2 = sInternalSdDir;
+            if (str2 != null && (str = sExternalSdDir) != null && (str2.startsWith(str) || sExternalSdDir.startsWith(sInternalSdDir))) {
+                result = true;
             }
-
-            return sInternalSdDir.startsWith(sExternalSdDir)
-                    || sExternalSdDir.startsWith(sInternalSdDir);
         }
+        return result;
     }
 
     public static List<String> getOtgPath(Context context) {
-        update(context);
-
         synchronized (sLock) {
-            return new ArrayList<>(sOtgPathes);
+            update(context);
+            ArrayList<String> arrayList = sOtgPathes;
+            if (arrayList == null) {
+                return null;
+            }
+            return (ArrayList) arrayList.clone();
         }
     }
 
     public static boolean isVolumeMounted(Context context, String path) {
-        return Environment.MEDIA_MOUNTED.equals(getVolumeState(context, path));
+        synchronized (sLock) {
+            update(context);
+        }
+        StorageManager sm = (StorageManager) context.getSystemService("storage");
+        if (path != null && sm != null) {
+            return Environment.MEDIA_MOUNTED.equals(sm.getVolumeState(path));
+        }
+        return false;
     }
 
     public static String getInternalPath(Context context) {
-        update(context);
-
+        String str;
         synchronized (sLock) {
-            if (sInternalSdDir != null && !sInternalSdDir.isEmpty()) {
-                return sInternalSdDir;
-            }
+            update(context);
+            str = sInternalSdDir;
         }
-
-        File dir = Environment.getExternalStorageDirectory();
-        String path = dir == null ? null : dir.getAbsolutePath();
-        return path == null || path.isEmpty() ? DEFAULT_INTERNAL_PATH : path;
+        return str;
     }
 
     public static String getExternalPath(Context context) {
-        update(context);
-
+        String str;
         synchronized (sLock) {
-            return sExternalSdDir;
+            update(context);
+            str = sExternalSdDir;
         }
+        return str;
     }
 
     public static int getPathType(Context context, String path) {
-        if (path == null) {
-            return NONE;
-        }
-
-        update(context);
-
         synchronized (sLock) {
+            update(context);
+            if (path == null) {
+                return -1;
+            }
             if (path.equals(sInternalSdDir)) {
-                return INTERNAL;
+                return 1;
             }
-
             if (path.equals(sExternalSdDir)) {
-                return EXTERNAL;
+                return 2;
             }
-
-            if (sOtgPathes.contains(path)) {
-                return OTG;
+            ArrayList<String> arrayList = sOtgPathes;
+            if (arrayList == null || !arrayList.contains(path)) {
+                return -1;
             }
+            return 3;
+        }
+    }
 
-            return NONE;
+    /* JADX INFO: Access modifiers changed from: private */
+    public static void getVolumes() {
+        IStorageManager iStorageManager = sMountService;
+        if (iStorageManager == null) {
+            Log.e(TAG, "getVolumes: sMountService is null!!!");
+            return;
+        }
+        try {
+            VolumeInfo[] vols = iStorageManager.getVolumes(0);
+            sExternalSdDir = null;
+            sOtgPathes.clear();
+            for (VolumeInfo vol : vols) {
+                String path = vol.path;
+                if (vol.type == 2) {
+                    int userId = UserHandle.myUserId();
+                    if (path != null) {
+                        sInternalSdDir = path.concat(FILE_SEPARATOR).concat(Integer.toString(userId));
+                        Log.d(TAG, "getVolumes: sInternalSdDir=" + sInternalSdDir);
+                    }
+                } else {
+                    DiskInfo diskInfo = vol.getDisk();
+                    if (diskInfo != null) {
+                        if (diskInfo.isSd() && path != null) {
+                            sExternalSdDir = path;
+                            Log.d(TAG, "getVolumes: sExternalSdDir=" + sExternalSdDir);
+                        }
+                        if (diskInfo.isUsb() && path != null && !sOtgPathes.contains(path)) {
+                            sOtgPathes.add(path);
+                            Log.d(TAG, "getVolumes: sOtgPathes.add=" + path);
+                        }
+                    }
+                }
+            }
+        } catch (RemoteException e) {
         }
     }
 
     public static String getMultiappSdDirectory() {
-        return MULTIAPP_INTERNAL_PATH;
-    }
-
-    private static String getVolumeState(Context context, String path) {
-        if (context == null || path == null) {
-            return Environment.MEDIA_UNKNOWN;
-        }
-
-        update(context);
-
-        StorageManager storageManager =
-                (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
-        if (storageManager == null) {
-            return Environment.MEDIA_UNKNOWN;
-        }
-
-        return storageManager.getVolumeState(path);
-    }
-
-    private static void getVolumesLocked() {
-        if (sMountService == null) {
-            Log.e(TAG, "getVolumesLocked: sMountService is null");
-            return;
-        }
-
-        try {
-            VolumeInfo[] volumes = sMountService.getVolumes(0);
-
-            sExternalSdDir = null;
-            sOtgPathes.clear();
-
-            if (volumes == null) {
-                return;
-            }
-
-            for (VolumeInfo volume : volumes) {
-                if (volume == null) {
-                    continue;
-                }
-
-                String path = volume.path;
-
-                if (volume.type == VolumeInfo.TYPE_EMULATED) {
-                    int userId = UserHandle.myUserId();
-                    if (path != null) {
-                        sInternalSdDir = path.concat(FILE_SEPARATOR).concat(Integer.toString(userId));
-                        Log.d(TAG, "getVolumesLocked: sInternalSdDir=" + sInternalSdDir);
-                    }
-                    continue;
-                }
-
-                DiskInfo diskInfo = volume.getDisk();
-                if (diskInfo == null || path == null) {
-                    continue;
-                }
-
-                if (diskInfo.isSd()) {
-                    sExternalSdDir = path;
-                    Log.d(TAG, "getVolumesLocked: sExternalSdDir=" + sExternalSdDir);
-                }
-
-                if (diskInfo.isUsb() && !sOtgPathes.contains(path)) {
-                    sOtgPathes.add(path);
-                    Log.d(TAG, "getVolumesLocked: sOtgPathes.add=" + path);
-                }
-            }
-        } catch (RemoteException e) {
-            Log.e(TAG, "getVolumesLocked: failed to query volumes", e);
-        } catch (Throwable t) {
-            Log.e(TAG, "getVolumesLocked: unexpected failure", t);
-        }
+        return "/storage/emulated/999";
     }
 }

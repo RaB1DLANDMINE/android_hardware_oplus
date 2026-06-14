@@ -6,66 +6,67 @@ import android.os.IInterface;
 import android.os.Parcel;
 import android.os.RemoteException;
 
+/* loaded from: classes.dex */
 public interface IOplusProtectConnection extends IInterface {
-    String DESCRIPTOR = "com.oplus.app.IOplusProtectConnection";
+    public static final String DESCRIPTOR = "com.oplus.app.IOplusProtectConnection";
 
-    void onError(int errorCode) throws RemoteException;
+    void onError(int i) throws RemoteException;
 
     void onSuccess() throws RemoteException;
 
     void onTimeout() throws RemoteException;
 
-    class Default implements IOplusProtectConnection {
-        @Override
+    public static class Default implements IOplusProtectConnection {
+        @Override // com.oplus.app.IOplusProtectConnection
         public void onSuccess() throws RemoteException {
         }
 
-        @Override
+        @Override // com.oplus.app.IOplusProtectConnection
         public void onError(int errorCode) throws RemoteException {
         }
 
-        @Override
+        @Override // com.oplus.app.IOplusProtectConnection
         public void onTimeout() throws RemoteException {
         }
 
-        @Override
+        @Override // android.os.IInterface
         public IBinder asBinder() {
             return null;
         }
     }
 
-    abstract class Stub extends Binder implements IOplusProtectConnection {
-        static final int TRANSACTION_onSuccess = 1;
+    public static abstract class Stub extends Binder implements IOplusProtectConnection {
         static final int TRANSACTION_onError = 2;
+        static final int TRANSACTION_onSuccess = 1;
         static final int TRANSACTION_onTimeout = 3;
 
         public Stub() {
-            attachInterface(this, DESCRIPTOR);
+            attachInterface(this, IOplusProtectConnection.DESCRIPTOR);
         }
 
         public static IOplusProtectConnection asInterface(IBinder obj) {
             if (obj == null) {
                 return null;
             }
-            IInterface iin = obj.queryLocalInterface(DESCRIPTOR);
-            if (iin instanceof IOplusProtectConnection) {
+            IInterface iin = obj.queryLocalInterface(IOplusProtectConnection.DESCRIPTOR);
+            if (iin != null && (iin instanceof IOplusProtectConnection)) {
                 return (IOplusProtectConnection) iin;
             }
             return new Proxy(obj);
         }
 
-        @Override
+        @Override // android.os.IInterface
         public IBinder asBinder() {
             return this;
         }
 
         public static String getDefaultTransactionName(int transactionCode) {
             switch (transactionCode) {
-                case TRANSACTION_onSuccess:
+                case 1:
                     return "onSuccess";
-                case TRANSACTION_onError:
+                case 2:
                     return "onError";
-                case TRANSACTION_onTimeout:
+                case 3:
                     return "onTimeout";
                 default:
                     return null;
@@ -76,25 +77,25 @@ public interface IOplusProtectConnection extends IInterface {
             return getDefaultTransactionName(transactionCode);
         }
 
-        @Override
+        @Override // android.os.Binder
         public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
-            if (code >= IBinder.FIRST_CALL_TRANSACTION && code <= 0x00ffffff) {
-                data.enforceInterface(DESCRIPTOR);
+            if (code >= 1 && code <= 16777215) {
+                data.enforceInterface(IOplusProtectConnection.DESCRIPTOR);
             }
-            if (code == INTERFACE_TRANSACTION) {
-                reply.writeString(DESCRIPTOR);
+            if (code == 1598968902) {
+                reply.writeString(IOplusProtectConnection.DESCRIPTOR);
                 return true;
             }
             switch (code) {
-                case TRANSACTION_onSuccess:
+                case 1:
                     onSuccess();
                     return true;
-                case TRANSACTION_onError:
-                    int errorCode = data.readInt();
+                case 2:
+                    int _arg0 = data.readInt();
                     data.enforceNoDataAvail();
-                    onError(errorCode);
+                    onError(_arg0);
                     return true;
-                case TRANSACTION_onTimeout:
+                case 3:
                     onTimeout();
                     return true;
                 default:
@@ -103,58 +104,58 @@ public interface IOplusProtectConnection extends IInterface {
         }
 
         private static class Proxy implements IOplusProtectConnection {
-            private final IBinder mRemote;
+            private IBinder mRemote;
 
             Proxy(IBinder remote) {
-                mRemote = remote;
+                this.mRemote = remote;
             }
 
-            @Override
+            @Override // android.os.IInterface
             public IBinder asBinder() {
-                return mRemote;
+                return this.mRemote;
             }
 
             public String getInterfaceDescriptor() {
-                return DESCRIPTOR;
+                return IOplusProtectConnection.DESCRIPTOR;
             }
 
-            @Override
+            @Override // com.oplus.app.IOplusProtectConnection
             public void onSuccess() throws RemoteException {
-                Parcel data = Parcel.obtain(asBinder());
+                Parcel _data = Parcel.obtain(asBinder());
                 try {
-                    data.writeInterfaceToken(DESCRIPTOR);
-                    mRemote.transact(TRANSACTION_onSuccess, data, null, IBinder.FLAG_ONEWAY);
+                    _data.writeInterfaceToken(IOplusProtectConnection.DESCRIPTOR);
+                    this.mRemote.transact(1, _data, null, 1);
                 } finally {
-                    data.recycle();
+                    _data.recycle();
                 }
             }
 
-            @Override
+            @Override // com.oplus.app.IOplusProtectConnection
             public void onError(int errorCode) throws RemoteException {
-                Parcel data = Parcel.obtain(asBinder());
+                Parcel _data = Parcel.obtain(asBinder());
                 try {
-                    data.writeInterfaceToken(DESCRIPTOR);
-                    data.writeInt(errorCode);
-                    mRemote.transact(TRANSACTION_onError, data, null, IBinder.FLAG_ONEWAY);
+                    _data.writeInterfaceToken(IOplusProtectConnection.DESCRIPTOR);
+                    _data.writeInt(errorCode);
+                    this.mRemote.transact(2, _data, null, 1);
                 } finally {
-                    data.recycle();
+                    _data.recycle();
                 }
             }
 
-            @Override
+            @Override // com.oplus.app.IOplusProtectConnection
             public void onTimeout() throws RemoteException {
-                Parcel data = Parcel.obtain(asBinder());
+                Parcel _data = Parcel.obtain(asBinder());
                 try {
-                    data.writeInterfaceToken(DESCRIPTOR);
-                    mRemote.transact(TRANSACTION_onTimeout, data, null, IBinder.FLAG_ONEWAY);
+                    _data.writeInterfaceToken(IOplusProtectConnection.DESCRIPTOR);
+                    this.mRemote.transact(3, _data, null, 1);
                 } finally {
-                    data.recycle();
+                    _data.recycle();
                 }
             }
         }
 
         public int getMaxTransactionId() {
-            return TRANSACTION_onError;
+            return 2;
         }
     }
 }

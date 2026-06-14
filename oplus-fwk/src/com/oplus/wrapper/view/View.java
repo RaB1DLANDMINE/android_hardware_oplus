@@ -5,146 +5,160 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+/* loaded from: classes2.dex */
 public class View {
-    public static final int DRAG_FLAG_REQUEST_SURFACE_FOR_RETURN_ANIMATION = 2048;
-
+    public static final int DRAG_FLAG_REQUEST_SURFACE_FOR_RETURN_ANIMATION = getDragFlagRequestSurfaceForReturnAnimation();
     private final android.view.View mView;
 
-    public View(android.view.View view) {
-        mView = view;
-    }
-
     public static boolean isVisibleToUser(android.view.View target) {
-        return false;
+        return target.isVisibleToUser();
     }
 
     public static boolean requestAccessibilityFocus(android.view.View target) {
-        return false;
+        return target.requestAccessibilityFocus();
     }
 
     public static boolean isLayoutRtl(android.view.View target) {
-        return false;
+        return target.isLayoutRtl();
     }
 
     public static ViewRootImpl getViewRootImpl(android.view.View target) {
-        if (target == null) {
+        android.view.ViewRootImpl viewRootImpl = target.getViewRootImpl();
+        if (viewRootImpl == null) {
             return null;
         }
-        android.view.ViewRootImpl vri = target.getViewRootImpl();
-        return vri == null ? null : new ViewRootImpl(vri);
+        return new ViewRootImpl(viewRootImpl);
     }
 
     public static void notifyViewAccessibilityStateChangedIfNeeded(android.view.View target, int changeType) {
+        target.notifyViewAccessibilityStateChangedIfNeeded(changeType);
     }
 
     public static void onMovedToDisplay(android.view.View target, int displayId, Configuration config) {
+        target.onMovedToDisplay(displayId, config);
     }
 
     public static void clearAccessibilityFocus(android.view.View target) {
+        target.clearAccessibilityFocus();
     }
 
     public static final boolean hasIdentityMatrix(android.view.View target) {
-        return false;
+        return target.hasIdentityMatrix();
     }
 
     public static final Matrix getInverseMatrix(android.view.View target) {
-        return null;
+        return target.getInverseMatrix();
     }
 
     public static int[] getLocationOnScreen(android.view.View target) {
-        return null;
+        return target.getLocationOnScreen();
     }
 
     public static int getPrivateFlags(android.view.View target) {
-        return 0;
+        return target.mPrivateFlags;
     }
 
     public static void setPrivateFlags(android.view.View target, int privateFlags) {
+        target.mPrivateFlags = privateFlags;
     }
 
     public static boolean isForegroundInsidePadding(android.view.View target) {
-        return false;
+        return target.isForegroundInsidePadding();
     }
 
     public static void getBoundsOnScreen(android.view.View target, Rect outRect) {
+        target.getBoundsOnScreen(outRect);
     }
 
     public static AccessibilityNodeInfo createAccessibilityNodeInfo(android.view.View target) {
-        return null;
+        return target.createAccessibilityNodeInfo();
     }
 
-    public static void setSkipFirstFrameDraw(android.view.View target, boolean skip) {
+    public View(android.view.View view) {
+        this.mView = view;
     }
 
     public boolean isVisibleToUser() {
-        return false;
+        return this.mView.isVisibleToUser();
     }
 
     public boolean requestAccessibilityFocus() {
-        return false;
+        return this.mView.requestAccessibilityFocus();
     }
 
     public boolean isLayoutRtl() {
-        return false;
+        return this.mView.isLayoutRtl();
     }
 
     public ViewRootImpl getViewRootImpl() {
-        if (mView == null) {
+        android.view.ViewRootImpl viewRootImpl = this.mView.getViewRootImpl();
+        if (viewRootImpl == null) {
             return null;
         }
-        android.view.ViewRootImpl vri = mView.getViewRootImpl();
-        return vri == null ? null : new ViewRootImpl(vri);
+        return new ViewRootImpl(viewRootImpl);
     }
 
     public void notifyViewAccessibilityStateChangedIfNeeded(int changeType) {
+        this.mView.notifyViewAccessibilityStateChangedIfNeeded(changeType);
     }
 
     public void onMovedToDisplay(int displayId, Configuration config) {
+        this.mView.onMovedToDisplay(displayId, config);
     }
 
     public void clearAccessibilityFocus() {
+        this.mView.clearAccessibilityFocus();
     }
 
     public final boolean hasIdentityMatrix() {
-        return false;
+        return this.mView.hasIdentityMatrix();
     }
 
     public final Matrix getInverseMatrix() {
-        return null;
+        return this.mView.getInverseMatrix();
     }
 
     public int[] getLocationOnScreen() {
-        return null;
+        return this.mView.getLocationOnScreen();
     }
 
     public int getPrivateFlags() {
-        return 0;
+        return this.mView.mPrivateFlags;
     }
 
     public void setPrivateFlags(int privateFlags) {
+        this.mView.mPrivateFlags = privateFlags;
     }
 
     public boolean isForegroundInsidePadding() {
-        return false;
+        return this.mView.isForegroundInsidePadding();
+    }
+
+    private static int getDragFlagRequestSurfaceForReturnAnimation() {
+        return 2048;
     }
 
     public void getBoundsOnScreen(Rect outRect) {
+        this.mView.getBoundsOnScreen(outRect);
     }
 
     public AccessibilityNodeInfo createAccessibilityNodeInfo() {
-        return null;
+        return this.mView.createAccessibilityNodeInfo();
     }
 
     public static class AccessibilityDelegate {
-        public AccessibilityDelegate(android.view.View.AccessibilityDelegate accessibilityDelegate) {
+        private final View.AccessibilityDelegate mAccessibilityDelegate;
+
+        public static AccessibilityNodeInfo createAccessibilityNodeInfo(View.AccessibilityDelegate target, android.view.View host) {
+            return target.createAccessibilityNodeInfo(host);
         }
 
-        public static AccessibilityNodeInfo createAccessibilityNodeInfo(android.view.View.AccessibilityDelegate target, android.view.View host) {
-            return null;
+        public AccessibilityDelegate(View.AccessibilityDelegate accessibilityDelegate) {
+            this.mAccessibilityDelegate = accessibilityDelegate;
         }
 
         public AccessibilityNodeInfo createAccessibilityNodeInfo(android.view.View host) {
-            return null;
+            return this.mAccessibilityDelegate.createAccessibilityNodeInfo(host);
         }
     }
 }

@@ -5,13 +5,12 @@ import android.common.OplusFeatureList;
 import android.content.Context;
 import android.os.IBinder;
 
-/* loaded from: classes.dex */
+/* JADX INFO: loaded from: classes.dex */
 public interface IOplusCameraManager extends IOplusCommonFeature {
     public static final IOplusCameraManager DEFAULT = new IOplusCameraManager() { // from class: android.hardware.camera2.IOplusCameraManager.1
     };
     public static final String NAME = "IOplusCameraManager";
 
-    /* loaded from: classes.dex */
     public enum Cmd {
         CMD_NONE,
         CMD_PRE_CAPTURE,
@@ -34,12 +33,10 @@ public interface IOplusCameraManager extends IOplusCommonFeature {
         CMD_OPLUS_FORCE_AINR
     }
 
-    @Override
     default OplusFeatureList.OplusIndex index() {
         return OplusFeatureList.OplusIndex.IOplusCameraManager;
     }
 
-    @Override
     default IOplusCommonFeature getDefault() {
         return DEFAULT;
     }

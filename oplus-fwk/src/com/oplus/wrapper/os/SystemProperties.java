@@ -1,9 +1,7 @@
 package com.oplus.wrapper.os;
 
-public final class SystemProperties {
-    private SystemProperties() {
-    }
-
+/* loaded from: classes.dex */
+public class SystemProperties {
     public static String get(String key) {
         return android.os.SystemProperties.get(key);
     }

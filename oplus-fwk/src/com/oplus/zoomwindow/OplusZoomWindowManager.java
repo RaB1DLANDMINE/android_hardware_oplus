@@ -1,25 +1,21 @@
 package com.oplus.zoomwindow;
 
 public class OplusZoomWindowManager {
-    private static final OplusZoomWindowManager INSTANCE = new OplusZoomWindowManager();
+
+    public static OplusZoomWindowManager sOplusZoomWindowManager = null;
 
     public static OplusZoomWindowManager getInstance() {
-        return INSTANCE;
-    }
-
-    public OplusZoomWindowInfo getCurrentZoomWindowState() {
-        return new OplusZoomWindowInfo();
-    }
-
-    public boolean isSupportZoomWindowMode() {
-        return false;
+        if (sOplusZoomWindowManager == null) {
+            sOplusZoomWindowManager = new OplusZoomWindowManager();
+        }
+        return sOplusZoomWindowManager;
     }
 
     public boolean registerZoomWindowObserver(IOplusZoomWindowObserver observer) {
-        return true;
+        return false;
     }
 
     public boolean unregisterZoomWindowObserver(IOplusZoomWindowObserver observer) {
-        return true;
+        return false;
     }
 }

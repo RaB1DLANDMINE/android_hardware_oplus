@@ -1,30 +1,54 @@
 package com.oplus.wrapper.os;
 
-public final class UserHandle {
-    public static final android.os.UserHandle CURRENT = android.os.UserHandle.CURRENT;
-    public static final android.os.UserHandle OWNER = android.os.UserHandle.of(0);
-    public static final android.os.UserHandle SYSTEM = android.os.UserHandle.SYSTEM;
-    public static final int USER_ALL = -1;
-    public static final int USER_CURRENT = -2;
-    public static final int USER_NULL = -10000;
-    public static final int USER_SYSTEM = 0;
-
+/* loaded from: classes2.dex */
+public class UserHandle {
     private final android.os.UserHandle mUserHandle;
-
-    private UserHandle() {
-        mUserHandle = null;
-    }
+    public static final android.os.UserHandle CURRENT = getCurrent();
+    public static final android.os.UserHandle OWNER = getOwner();
+    public static final int USER_CURRENT = getUserCurrent();
+    public static final int USER_SYSTEM = getUserSystem();
+    public static final android.os.UserHandle SYSTEM = getSystem();
+    public static final int USER_ALL = getUserAll();
+    public static final int USER_NULL = getUserNull();
 
     public UserHandle(android.os.UserHandle userHandle) {
-        mUserHandle = userHandle;
+        this.mUserHandle = userHandle;
     }
 
     public UserHandle(int userId) {
-        mUserHandle = android.os.UserHandle.of(userId);
+        this.mUserHandle = new android.os.UserHandle(userId);
     }
 
     public static android.os.UserHandle create(int userId) {
-        return android.os.UserHandle.of(userId);
+        return new android.os.UserHandle(userId);
+    }
+
+    private static android.os.UserHandle getCurrent() {
+        return android.os.UserHandle.CURRENT;
+    }
+
+    private static android.os.UserHandle getOwner() {
+        return android.os.UserHandle.OWNER;
+    }
+
+    private static int getUserCurrent() {
+        return -2;
+    }
+
+    private static int getUserSystem() {
+        return 0;
+    }
+
+    private static android.os.UserHandle getSystem() {
+        return android.os.UserHandle.SYSTEM;
+    }
+
+    private static int getUserAll() {
+        return -1;
+    }
+
+    private static int getUserNull() {
+        return -10000;
     }
 
     public static int getIdentifier(android.os.UserHandle target) {
@@ -36,23 +60,23 @@ public final class UserHandle {
     }
 
     public int getIdentifier() {
-        return mUserHandle != null ? mUserHandle.getIdentifier() : USER_NULL;
+        return this.mUserHandle.getIdentifier();
     }
 
     public android.os.UserHandle getUserHandle() {
-        return mUserHandle;
+        return this.mUserHandle;
     }
 
     public boolean isSystem() {
-        return mUserHandle != null && mUserHandle.isSystem();
-    }
-
-    public static int myUserId() {
-        return android.os.UserHandle.myUserId();
+        return this.mUserHandle.isSystem();
     }
 
     public static int getUserId(int uid) {
         return android.os.UserHandle.getUserId(uid);
+    }
+
+    public static int myUserId() {
+        return android.os.UserHandle.myUserId();
     }
 
     public static int getAppId(int uid) {

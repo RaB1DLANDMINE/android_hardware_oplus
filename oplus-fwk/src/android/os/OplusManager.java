@@ -2,10 +2,7 @@ package android.os;
 
 import java.util.Map;
 
-public final class OplusManager {
-    private OplusManager() {
-    }
+public class OplusManager {
 
-    public static void onStamp(String eventId, Map<?, ?> logMap) {
-    }
+    public static void onStamp(String eventId, Map<String, String> logMap) {}
 }

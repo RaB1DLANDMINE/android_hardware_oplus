@@ -6,60 +6,85 @@ import android.os.RemoteException;
 import android.os.UserHandle;
 import android.util.Log;
 
-public class OplusCommonConfig {
-    public static final int TO_AMS = 1;
-    public static final int TO_PMS = 2;
-
+public final class OplusCommonConfig {
     private static final String TAG = "OplusCommonConfig";
-    private static volatile OplusCommonConfig sConfig;
+    private OplusActivityManager mOppoAm;
 
-    private OplusActivityManager mOplusActivityManager = new OplusActivityManager();
+    private static OplusCommonConfig sInstance = null;
 
     private OplusCommonConfig() {
+        this.mOppoAm = null;
+        this.mOppoAm = new OplusActivityManager();
     }
 
     public static OplusCommonConfig getInstance() {
-        if (sConfig == null) {
-            synchronized (OplusCommonConfig.class) {
-                if (sConfig == null) {
-                    sConfig = new OplusCommonConfig();
-                }
-            }
+        if (sInstance == null) {
+            sInstance = new OplusCommonConfig();
         }
-        return sConfig;
+        return sInstance;
     }
 
     public boolean putConfigInfo(String configName, Bundle bundle, int flag) {
-        return putConfigInfoAsUser(configName, bundle, flag, UserHandle.myUserId());
+        if (this.mOppoAm == null) {
+            this.mOppoAm = new OplusActivityManager();
+        }
+        OplusActivityManager oplusActivityManager = this.mOppoAm;
+        if (oplusActivityManager != null) {
+            try {
+                return oplusActivityManager.putConfigInfo(configName, bundle, flag, UserHandle.myUserId());
+            } catch (RemoteException e) {
+                Log.e(TAG, "putConfigInfo " + configName + " failed!");
+                return false;
+            }
+        }
+        return false;
     }
 
     public boolean putConfigInfoAsUser(String configName, Bundle bundle, int flag, int userId) {
-        ensureActivityManager();
-        try {
-            return mOplusActivityManager.putConfigInfo(configName, bundle, flag, userId);
-        } catch (RemoteException e) {
-            Log.e(TAG, "putConfigInfoAsUser " + configName + " failed!", e);
-            return false;
+        if (this.mOppoAm == null) {
+            this.mOppoAm = new OplusActivityManager();
         }
+        OplusActivityManager oplusActivityManager = this.mOppoAm;
+        if (oplusActivityManager != null) {
+            try {
+                return oplusActivityManager.putConfigInfo(configName, bundle, flag, userId);
+            } catch (RemoteException e) {
+                Log.e(TAG, "putConfigInfoAsUser " + configName + " failed!");
+                return false;
+            }
+        }
+        return false;
     }
 
     public Bundle getConfigInfo(String configName, int flag) {
-        return getConfigInfoAsUser(configName, flag, UserHandle.myUserId());
+        if (this.mOppoAm == null) {
+            this.mOppoAm = new OplusActivityManager();
+        }
+        OplusActivityManager oplusActivityManager = this.mOppoAm;
+        if (oplusActivityManager != null) {
+            try {
+                return oplusActivityManager.getConfigInfo(configName, flag, UserHandle.myUserId());
+            } catch (RemoteException e) {
+                Log.e(TAG, "getConfigInfo " + configName + " failed!");
+                return null;
+            }
+        }
+        return null;
     }
 
     public Bundle getConfigInfoAsUser(String configName, int flag, int userId) {
-        ensureActivityManager();
-        try {
-            return mOplusActivityManager.getConfigInfo(configName, flag, userId);
-        } catch (RemoteException e) {
-            Log.e(TAG, "getConfigInfoAsUser " + configName + " failed!", e);
-            return null;
+        if (this.mOppoAm == null) {
+            this.mOppoAm = new OplusActivityManager();
         }
-    }
-
-    private void ensureActivityManager() {
-        if (mOplusActivityManager == null) {
-            mOplusActivityManager = new OplusActivityManager();
+        OplusActivityManager oplusActivityManager = this.mOppoAm;
+        if (oplusActivityManager != null) {
+            try {
+                return oplusActivityManager.getConfigInfo(configName, flag, userId);
+            } catch (RemoteException e) {
+                Log.e(TAG, "getConfigInfoAsUser " + configName + " failed!");
+                return null;
+            }
         }
+        return null;
     }
 }

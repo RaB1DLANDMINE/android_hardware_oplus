@@ -5,68 +5,62 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewRootImpl;
 import com.android.internal.graphics.drawable.BackgroundBlurDrawable;
-import com.oplus.graphics.OplusBlurParam;
 
+/* Stub implementation - OplusBlurParam not available in AOSP/LineageOS */
 public class ViewRootManager {
     private static final String TAG = "ViewRootManager";
     private BackgroundBlurDrawable mBackgroundBlurDrawable;
 
     public ViewRootManager(View view) {
-        if (view == null) {
-            return;
-        }
-
+        this.mBackgroundBlurDrawable = null;
         ViewRootImpl viewRootImpl = view.getViewRootImpl();
         if (viewRootImpl != null) {
-            mBackgroundBlurDrawable = viewRootImpl.createBackgroundBlurDrawable();
+            this.mBackgroundBlurDrawable = viewRootImpl.createBackgroundBlurDrawable();
         } else {
             Log.d(TAG, "viewRootImpl is null return null");
         }
     }
 
     public Drawable getBackgroundBlurDrawable() {
-        return mBackgroundBlurDrawable;
+        return this.mBackgroundBlurDrawable;
     }
 
     public void setBlurRadius(int blurRadius) {
-        if (mBackgroundBlurDrawable == null) {
+        if (this.mBackgroundBlurDrawable == null) {
             Log.d(TAG, "BackgroundBlurDrawable is null return null");
             return;
         }
-
-        mBackgroundBlurDrawable.setBlurRadius(blurRadius);
+        this.mBackgroundBlurDrawable.setBlurRadius(blurRadius);
     }
 
     public void setCornerRadius(float cornerRadius) {
-        if (mBackgroundBlurDrawable == null) {
+        if (this.mBackgroundBlurDrawable == null) {
             Log.d(TAG, "BackgroundBlurDrawable is null return null");
             return;
         }
-
-        mBackgroundBlurDrawable.setCornerRadius(cornerRadius);
+        this.mBackgroundBlurDrawable.setCornerRadius(cornerRadius);
     }
 
     public void setCornerRadius(float cornerRadiusTL, float cornerRadiusTR,
             float cornerRadiusBL, float cornerRadiusBR) {
-        if (mBackgroundBlurDrawable == null) {
+        if (this.mBackgroundBlurDrawable == null) {
             Log.d(TAG, "BackgroundBlurDrawable is null return null by four");
             return;
         }
-
-        mBackgroundBlurDrawable.setCornerRadius(
+        this.mBackgroundBlurDrawable.setCornerRadius(
                 cornerRadiusTL, cornerRadiusTR, cornerRadiusBL, cornerRadiusBR);
     }
 
     public void setColor(int color) {
-        if (mBackgroundBlurDrawable == null) {
+        if (this.mBackgroundBlurDrawable == null) {
             Log.d(TAG, "BackgroundBlurDrawable is null return null");
             return;
         }
-
-        mBackgroundBlurDrawable.setColor(color);
+        this.mBackgroundBlurDrawable.setColor(color);
     }
 
-    public void setBlurParams(OplusBlurParam params) {
-        // AOSP's blur drawable does not expose OPlus material blur params.
+    /** Stub - OplusBlurParam not available on AOSP/LineageOS */
+    public void setBlurParams(Object params) {
+        // no-op
     }
 }

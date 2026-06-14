@@ -592,7 +592,7 @@ public final class OplusCameraManager implements IOplusCameraManager {
                 data.writeInterfaceToken(DESCRIPTOR);
                 data.writeInt(cmd.ordinal());
                 data.writeIntArray(param);
-                this.mRemote.transact(10015, data, reply, 0);
+                this.mRemote.transact(10015, data, reply, 1);
                 reply.readException();
                 data.recycle();
                 reply.recycle();

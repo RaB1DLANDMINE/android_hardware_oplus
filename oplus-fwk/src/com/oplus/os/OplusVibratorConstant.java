@@ -1,13 +1,15 @@
 package com.oplus.os;
 
-/**
- * Stub for OEM linear-motor vibrator waveform constants. OplusCamera reads these amplitude/time
- * arrays to play rapid haptic patterns. Values are plausible placeholders (equal-length pairs);
- * exact OEM waveforms are non-critical for bring-up.
- */
 public class OplusVibratorConstant {
-    public static final int[] RAPID_MIDDLE_WAVEFORM_AMPLITUDE = {0, 180, 0};
-    public static final long[] RAPID_MIDDLE_WAVEFORM_TIME = {0, 20, 20};
-    public static final int[] RAPID_STRONG_WAVEFORM_AMPLITUDE = {0, 255, 0};
-    public static final long[] RAPID_STRONG_WAVEFORM_TIME = {0, 20, 20};
+    public static final long LONG_MIDDLE_ONESHOT_TIME = 150;
+    public static final long LONG_STRONG_ONESHOT_TIME = 400;
+    public static final int MIDDLE_AMPLITUDE = 175;
+    public static final long RAPID_MIDDLE_ONESHOT_TIME = 50;
+    public static final long RAPID_WEAK_ONESHOT_TIME = 25;
+    public static final int WEAK_AMPLITUDE = 100;
+    public static final long[] RAPID_MIDDLE_WAVEFORM_TIME = {0, 25, 70, 25};
+    public static final int[] RAPID_MIDDLE_WAVEFORM_AMPLITUDE = {0, 195, 0, 195};
+    public static final long[] RAPID_STRONG_WAVEFORM_TIME = {0, 350, 200, 350};
+    public static final int STRONG_AMPLITUDE = 250;
+    public static final int[] RAPID_STRONG_WAVEFORM_AMPLITUDE = {0, STRONG_AMPLITUDE, 0, STRONG_AMPLITUDE};
 }

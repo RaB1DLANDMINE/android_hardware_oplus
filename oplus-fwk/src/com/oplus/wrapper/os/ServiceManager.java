@@ -2,6 +2,7 @@ package com.oplus.wrapper.os;
 
 import android.os.IBinder;
 
+/* loaded from: classes.dex */
 public class ServiceManager {
     public static IBinder checkService(String name) {
         return android.os.ServiceManager.checkService(name);
@@ -13,13 +14,5 @@ public class ServiceManager {
 
     public static void addService(String name, IBinder service) {
         android.os.ServiceManager.addService(name, service);
-    }
-
-    public static boolean isDeclared(String name) {
-        return android.os.ServiceManager.isDeclared(name);
-    }
-
-    public static IBinder waitForService(String name) {
-        return android.os.ServiceManager.waitForService(name);
     }
 }

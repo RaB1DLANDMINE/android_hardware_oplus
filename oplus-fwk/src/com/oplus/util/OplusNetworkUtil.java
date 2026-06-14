@@ -1,20 +1,40 @@
 package com.oplus.util;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 
 public class OplusNetworkUtil {
-    public static final int AIRPLANE_MODE_ON_STR = 0;
-    public static final int MOBILE_AND_WLAN_NETWORK_NOT_CONNECT_STR = 1;
-    public static final int NETWORK_CONNECT_OK_STR = -1;
-    public static final int NO_NETWORK_CONNECT_STR = 3;
-    public static final String TAG = "OplusNetworkUtil";
-    public static final int WLAN_NEED_LOGIN_STR = 2;
+
+    private static final String DEFAULT_HTTP_URI = "http://connectivitycheck.gstatic.com/generate_204";
 
     public static boolean isWifiConnected(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            return cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState()
+                    == NetworkInfo.State.CONNECTED;
+        }
         return false;
     }
 
     public static boolean isMobileDataConnected(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            return cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState()
+                    == NetworkInfo.State.CONNECTED;
+        }
         return false;
+    }
+
+    public static void onClickLoginBtn(Context context) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(DEFAULT_HTTP_URI));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+        context.startActivity(intent);
+    }
+
+    public static int getErrorString(Context context, String url) {
+        return 1;
     }
 }
