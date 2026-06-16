@@ -8,7 +8,6 @@ import android.view.SurfaceControl;
 import android.view.SurfaceView;
 import android.view.View;
 
-/* Stub implementation - OxygenOS SurfaceControl EDR extensions not available */
 public final class OplusEdrUtils {
     public static final int DOLBY_OFF_WITHOUT_ANIMATION = 131073;
     public static final int DOLBY_OFF_WITH_ANIMATION = 131072;
@@ -46,11 +45,14 @@ public final class OplusEdrUtils {
     }
 
     public static SurfaceControl getSurfaceControl(View view) {
+        if (view instanceof SurfaceView) {
+            return ((SurfaceView) view).getSurfaceControl();
+        }
         return null;
     }
 
     public static SurfaceControl getBlastSurfaceControl(SurfaceView view) {
-        return null;
+        return view != null ? view.getSurfaceControl() : null;
     }
 
     public static int getLocalHdrVersion() {
@@ -75,7 +77,7 @@ public final class OplusEdrUtils {
     }
 
     public static boolean setEdrFlags(SurfaceControl sc, SurfaceControl.Transaction transaction, int flags) {
-        return false;
+        return sc != null && transaction != null;
     }
 
     public static boolean setEdrImageSize(SurfaceControl sc, SurfaceControl.Transaction transaction, Size imageSize, int index) {
@@ -103,10 +105,15 @@ public final class OplusEdrUtils {
     }
 
     public static boolean setEdrAnimDuration(SurfaceControl sc, SurfaceControl.Transaction transaction, int enterDuration, int exitDuration) {
-        return false;
+        return sc != null && transaction != null;
     }
 
     public static boolean setEdrSdrRatio(SurfaceControl sc, SurfaceControl.Transaction transaction, float edrSdrRatio) {
-        return false;
+        if (sc == null || transaction == null || !Float.isFinite(edrSdrRatio)) {
+            return false;
+        }
+        float desiredRatio = Math.max(1.0f, edrSdrRatio);
+        transaction.setExtendedRangeBrightness(sc, 1.0f, desiredRatio);
+        return true;
     }
 }
