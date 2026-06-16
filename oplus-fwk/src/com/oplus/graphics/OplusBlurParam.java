@@ -1,11 +1,21 @@
 package com.oplus.graphics;
 
 public class OplusBlurParam {
-    public OplusBlurParam() {}
+    public OplusBlurParam() {
+    }
 
-    public void setBlurType(int type) {}
+    public void setBlurType(int blurType) {
+    }
 
-    public void setMaterialParams(int type, float[] color, float[] radius) {}
+    public void setBlurRadius(int blurRadius) {
+    }
 
-    public void setSmoothCornerWeight(float weight) {}
+    public void setMaterialParams(int material, float[] colorParams, float[] weightParams) {
+    }
+
+    public void setSmoothCornerType(int cornerType) {
+    }
+
+    public void setSmoothCornerWeight(float weight) {
+    }
 }

@@ -5,16 +5,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class OplusCfgFilePolicy {
+public class OplusCfgFilePolicy {
+    public static final int DEFAULT_SLOT = -2;
+
     private OplusCfgFilePolicy() {
     }
 
-    public static List<String> getCfgLevelList(String path, int type) {
-        if (path == null || path.isEmpty()) {
+    public static String getCarrierId(int slot) {
+        return "";
+    }
+
+    public static List<String> getCfgLevelList(String configName, int slot) {
+        if (configName == null || configName.isEmpty()) {
             return Collections.emptyList();
         }
 
-        File file = new File(path);
+        File file = new File(configName);
         if (file.exists()) {
             return Collections.singletonList(file.getAbsolutePath());
         }
@@ -22,7 +28,7 @@ public final class OplusCfgFilePolicy {
         return Collections.emptyList();
     }
 
-    public static List<String> getCfgFileList(String dir, String name, int type) {
+    public static List<String> getCfgFileList(String configName, String dir, int slot) {
         if (dir == null || dir.isEmpty()) {
             return Collections.emptyList();
         }
@@ -32,8 +38,8 @@ public final class OplusCfgFilePolicy {
             return Collections.emptyList();
         }
 
-        if (name != null && !name.isEmpty()) {
-            File file = new File(base, name);
+        if (configName != null && !configName.isEmpty()) {
+            File file = new File(base, configName);
             if (file.exists()) {
                 return Collections.singletonList(file.getAbsolutePath());
             }
@@ -50,5 +56,13 @@ public final class OplusCfgFilePolicy {
             result.add(child.getAbsolutePath());
         }
         return result;
+    }
+
+    public static File getCfgTopPriorityFile(String configName, String dir, int slot) {
+        List<String> files = getCfgFileList(configName, dir, slot);
+        if (files.isEmpty()) {
+            return null;
+        }
+        return new File(files.get(0));
     }
 }
