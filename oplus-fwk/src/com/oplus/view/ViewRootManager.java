@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewRootImpl;
 import com.android.internal.graphics.drawable.BackgroundBlurDrawable;
+import com.oplus.graphics.OplusBlurParam;
 
 /* Stub implementation - OplusBlurParam not available in AOSP/LineageOS */
 public class ViewRootManager {
@@ -62,5 +63,9 @@ public class ViewRootManager {
     /** Stub - OplusBlurParam not available on AOSP/LineageOS */
     public void setBlurParams(Object params) {
         // no-op
+    }
+
+    public void setBlurParams(OplusBlurParam params) {
+        setBlurParams((Object) params);
     }
 }
