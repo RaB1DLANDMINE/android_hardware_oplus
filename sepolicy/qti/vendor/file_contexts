@@ -82,10 +82,6 @@
 /(vendor|odm)/bin/hw/mdm_feature                                  u:object_r:mdm_feature_exec:s0
 /dev/mdmfeature                                                   u:object_r:mdmfeature_device:s0
 
-# MDM feature
-/(odm|vendor/odm)/bin/hw/mdm_feature    u:object_r:oplus_mdm_feature_exec:s0
-/dev/mdmfeature                         u:object_r:oplus_mdmfeature_device:s0
-
 # NFC
 /dev/pn553    u:object_r:nfc_device:s0
 
