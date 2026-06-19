@@ -1,5 +1,7 @@
 package com.oplus.multiuser;
 
+import android.os.UserHandle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,10 @@ public class OplusMultiUserManager {
     }
 
     public boolean isMultiSystemUserId(int userId) {
+        return false;
+    }
+
+    public boolean isMultiSystemUserHandle(UserHandle userHandle) {
         return false;
     }
 }
