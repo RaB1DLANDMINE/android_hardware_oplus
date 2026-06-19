@@ -5,13 +5,16 @@
 
 #define LOG_TAG "vendor.lineage.touch-service.oplus"
 
+#include <android-base/logging.h>
 #include <android-base/file.h>
+#include <android-base/stringprintf.h>
 #include <android-base/strings.h>
 
 #include <OplusTouchConstants.h>
 #include <TouchscreenGestureConfig.h>
 
 using ::android::base::ReadFileToString;
+using ::android::base::StringPrintf;
 using ::android::base::Trim;
 using ::android::base::WriteStringToFile;
 
@@ -44,32 +47,65 @@ ndk::ScopedAStatus TouchscreenGesture::getSupportedGestures(std::vector<Gesture>
 
 ndk::ScopedAStatus TouchscreenGesture::setGestureEnabled(const Gesture& gesture, bool enabled) {
     int contents = 0;
+    const int gestureBit = 1 << (gesture.keycode - kGestureStartKey);
+
+    if (gestureBit == OplusTouchConstants::DOUBLE_TAP_GESTURE) {
+        LOG(INFO) << "DT2W debug: ignoring touchscreen gesture write for Settings-owned "
+                  << gesture.name;
+        return ndk::ScopedAStatus::ok();
+    }
 
     if (std::string tmp; mOplusTouch) {
         mOplusTouch->touchReadNodeFile(OplusTouchConstants::DEFAULT_TP_IC_ID,
                                        OplusTouchConstants::DOUBLE_TAP_INDEP_NODE, &tmp);
+        LOG(INFO) << "DT2W debug: read OPlus node "
+                  << OplusTouchConstants::DOUBLE_TAP_INDEP_NODE << " raw=" << tmp
+                  << " gesture=" << gesture.name << " keycode=" << gesture.keycode
+                  << " enabled=" << enabled;
         contents = std::stoi(tmp, nullptr, 16);
     } else if (ReadFileToString(kGestureEnableIndepPath, &tmp)) {
+        LOG(INFO) << "DT2W debug: read proc node " << kGestureEnableIndepPath
+                  << " raw=" << Trim(tmp) << " gesture=" << gesture.name
+                  << " keycode=" << gesture.keycode << " enabled=" << enabled;
         contents = std::stoi(Trim(tmp), nullptr, 16);
     } else {
+        LOG(ERROR) << "DT2W debug: failed to read gesture enable node";
         return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
     }
 
     if (enabled) {
-        contents |= (1 << (gesture.keycode - kGestureStartKey));
+        contents |= gestureBit;
     } else {
-        contents &= ~(1 << (gesture.keycode - kGestureStartKey));
+        contents &= ~gestureBit;
     }
+    contents |= OplusTouchConstants::DOUBLE_TAP_GESTURE;
+
+    const std::string contentsHex = StringPrintf("%x", contents);
+    const std::string contentsDec = std::to_string(contents);
+    LOG(INFO) << "DT2W debug: write contentsDec=" << contents
+              << " contentsHex=" << contentsHex << " gestureBit=" << gestureBit;
 
     if (mOplusTouch) {
-        int aidl_return = 0;
-        mOplusTouch->touchWriteNodeFile(OplusTouchConstants::DEFAULT_TP_IC_ID,
-                                        OplusTouchConstants::DOUBLE_TAP_ENABLE_NODE, "1",
-                                        &aidl_return);
-        mOplusTouch->touchWriteNodeFile(OplusTouchConstants::DEFAULT_TP_IC_ID,
-                                        OplusTouchConstants::DOUBLE_TAP_INDEP_NODE,
-                                        std::to_string(contents), &aidl_return);
-    } else if (!WriteStringToFile(std::to_string(contents), kGestureEnableIndepPath, true)) {
+        int enableResult = 0;
+        int indepResult = 0;
+        auto enableStatus = mOplusTouch->touchWriteNodeFile(
+                OplusTouchConstants::DEFAULT_TP_IC_ID, OplusTouchConstants::DOUBLE_TAP_ENABLE_NODE,
+                "1", &enableResult);
+        auto indepStatus = mOplusTouch->touchWriteNodeFile(
+                OplusTouchConstants::DEFAULT_TP_IC_ID, OplusTouchConstants::DOUBLE_TAP_INDEP_NODE,
+                contentsDec, &indepResult);
+        LOG(INFO) << "DT2W debug: sync write enableStatus=" << enableStatus.getDescription()
+                  << " enableResult=" << enableResult
+                  << " indepStatus=" << indepStatus.getDescription()
+                  << " indepResult=" << indepResult;
+        if (std::string tmp;
+            mOplusTouch->touchReadNodeFile(OplusTouchConstants::DEFAULT_TP_IC_ID,
+                                           OplusTouchConstants::DOUBLE_TAP_INDEP_NODE, &tmp)
+                    .isOk()) {
+            LOG(INFO) << "DT2W debug: readback OPlus node "
+                      << OplusTouchConstants::DOUBLE_TAP_INDEP_NODE << " raw=" << tmp;
+        }
+    } else if (!WriteStringToFile(contentsHex, kGestureEnableIndepPath, true)) {
         return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
     }
 
