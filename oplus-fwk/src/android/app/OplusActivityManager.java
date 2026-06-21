@@ -126,6 +126,9 @@ public class OplusActivityManager extends OplusBaseActivityManager implements IO
     public void removeStageProtectInfo(String pkg, String callerPkg) throws android.os.RemoteException {
     }
 
+    public void addBackgroundRestrictedInfo(String callerPkg, java.util.List<String> targetPkgList) throws android.os.RemoteException {
+    }
+
     public boolean registerTaskInfoChangeListener(com.oplus.app.OplusTaskInfoChangeListener listener, int arg1, int arg2) {
         return true;
     }

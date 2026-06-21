@@ -12,8 +12,4 @@ java_library {
         "src/**/*.aidl",
         "src/**/*.java",
     ],
-
-    exclude_srcs: [
-        "src/com/oplus/app/IOplusProtectConnection.java",
-    ],
 }

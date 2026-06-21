@@ -18,4 +18,8 @@ public class OplusZoomWindowManager {
     public boolean unregisterZoomWindowObserver(IOplusZoomWindowObserver observer) {
         return false;
     }
+
+    public boolean isSupportZoomWindowMode() {
+        return false;
+    }
 }
