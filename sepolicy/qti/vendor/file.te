@@ -28,6 +28,11 @@ type vendor_proc_fingerprint, fs_type, proc_type;
 # Frame boost
 type vendor_proc_oplus_frame_boost, fs_type, proc_type;
 
+# GameOpt
+type vendor_proc_aoss_send_message, fs_type, proc_type;
+type vendor_proc_game_opt, fs_type, proc_type;
+type vendor_proc_oplus_hmbird, fs_type, proc_type;
+
 # Graphics
 type vendor_sysfs_sde_crtc, fs_type, sysfs_type;
 

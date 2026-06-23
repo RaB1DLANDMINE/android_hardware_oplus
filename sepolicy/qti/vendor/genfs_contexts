@@ -42,6 +42,12 @@ genfscon proc /fp_id    u:object_r:vendor_proc_fingerprint:s0
 # Frame boost
 genfscon proc /oplus_frame_boost    u:object_r:vendor_proc_oplus_frame_boost:s0
 
+# GameOpt
+genfscon proc /aoss_send_message    u:object_r:vendor_proc_aoss_send_message:s0
+genfscon proc /game_opt    u:object_r:vendor_proc_game_opt:s0
+genfscon proc /oplus_hmbird    u:object_r:vendor_proc_oplus_hmbird:s0
+genfscon proc /sys/hmbird_II    u:object_r:vendor_proc_oplus_hmbird:s0
+
 # Graphics
 genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/sde-crtc-0/early_wakeup    u:object_r:vendor_sysfs_sde_crtc:s0
 genfscon sysfs /devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/sde-crtc-1/early_wakeup    u:object_r:vendor_sysfs_sde_crtc:s0
