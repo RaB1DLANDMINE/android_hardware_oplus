@@ -85,6 +85,7 @@ persist.hbp.             u:object_r:system_oplus_touch_prop:s0
 persist.sys.alwayson.    u:object_r:system_oplus_touch_prop:s0
 persist.sys.tpic.        u:object_r:system_oplus_touch_prop:s0
 sys.touch.game_mode      u:object_r:system_oplus_touch_prop:s0
+sys.touch.report_rate    u:object_r:system_oplus_touch_prop:s0
 
 # Version
 ro.build.release_type            u:object_r:exported_system_prop:s0

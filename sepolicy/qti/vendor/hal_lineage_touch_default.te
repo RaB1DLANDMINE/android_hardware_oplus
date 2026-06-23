@@ -3,4 +3,6 @@ allow hal_lineage_touch_default hal_oplus_touch_aidl_service:service_manager fin
 binder_call(hal_lineage_touch_default, hal_oplus_touch_aidl)
 binder_use(hal_lineage_touch_default)
 
+get_prop(hal_lineage_touch_default, system_oplus_touch_prop)
+
 rw_dir_file(hal_lineage_touch_default, vendor_proc_display)
