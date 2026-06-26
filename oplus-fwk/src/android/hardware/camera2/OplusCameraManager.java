@@ -14,7 +14,6 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemProperties;
 import android.util.Log;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
@@ -102,15 +101,7 @@ public final class OplusCameraManager implements IOplusCameraManager {
         if (meta == null || !(meta instanceof CameraMetadataNative)) {
             return null;
         }
-        TotalCaptureResult r = new TotalCaptureResult((CameraMetadataNative) meta, 0);
-        try {
-            Field numField = CaptureResult.class.getDeclaredField("mFrameNumber");
-            numField.setAccessible(true);
-            numField.setLong(r, frameId);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-        return r;
+        return new TotalCaptureResult(new CameraMetadataNative((CameraMetadataNative) meta), 0);
     }
 
     @Override // android.hardware.camera2.IOplusCameraManager
