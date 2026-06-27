@@ -26,6 +26,10 @@ public class OsenseResEventClient {
         return 0;
     }
 
+    public int unregisterEventCallback(OsenseEventCallback callback) {
+        return 0;
+    }
+
     public void requestSceneAction(Bundle bundle) {
         return;
     }
@@ -34,10 +38,14 @@ public class OsenseResEventClient {
         return 0;
     }
 
+    public void startBackgroundRunning(Context context, int bgMode, OsenseEventCallback callback) {
+    }
+
     public void startBackgroundRunning(Context context, int bgMode, BgRunningCallback callback) {
     }
 
     public boolean stopBackgroundRunning(Context context, int requestId) {
         return false;
     }
+
 }
