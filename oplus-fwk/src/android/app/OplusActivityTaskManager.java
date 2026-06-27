@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo;
 import android.os.Parcel;
 import android.os.RemoteException;
 import com.oplus.app.OplusAppInfo;
+import com.oplus.app.OplusTaskInfoChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,5 +87,17 @@ public class OplusActivityTaskManager extends OplusBaseActivityTaskManager imple
             data.recycle();
             reply.recycle();
         }
+    }
+
+    @Override // android.app.IOplusActivityTaskManager
+    public boolean registerTaskInfoChangeListener(
+            OplusTaskInfoChangeListener listener, int type, int displayId) throws RemoteException {
+        return true;
+    }
+
+    @Override // android.app.IOplusActivityTaskManager
+    public boolean unregisterTaskInfoChangeListener(OplusTaskInfoChangeListener listener)
+            throws RemoteException {
+        return true;
     }
 }

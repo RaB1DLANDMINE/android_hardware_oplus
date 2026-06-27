@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.RemoteException;
 import com.oplus.app.OplusAppInfo;
+import com.oplus.app.OplusTaskInfoChangeListener;
 import java.util.List;
 
 /* loaded from: classes.dex */
@@ -129,7 +130,15 @@ public class OplusActivityManager extends OplusBaseActivityManager implements IO
     public void addBackgroundRestrictedInfo(String callerPkg, java.util.List<String> targetPkgList) throws android.os.RemoteException {
     }
 
-    public boolean registerTaskInfoChangeListener(com.oplus.app.OplusTaskInfoChangeListener listener, int arg1, int arg2) {
-        return true;
+    @Override
+    public boolean registerTaskInfoChangeListener(
+            OplusTaskInfoChangeListener listener, int type, int displayId) throws RemoteException {
+        return this.mOplusAtm.registerTaskInfoChangeListener(listener, type, displayId);
+    }
+
+    @Override
+    public boolean unregisterTaskInfoChangeListener(OplusTaskInfoChangeListener listener)
+            throws RemoteException {
+        return this.mOplusAtm.unregisterTaskInfoChangeListener(listener);
     }
 }
