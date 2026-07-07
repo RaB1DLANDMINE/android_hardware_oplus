@@ -36,12 +36,16 @@ public class OplusBuild {
     private static final String[] VERSIONS = {"V1.0", "V1.2", "V1.4", "V2.0", "V2.1", "V3.0", "V3.1", "V3.2", "V5.0", "V5.1", "V5.2", "V6.0", "V6.1", "V6.2", "V6.7", "V7", "V7.1", "V7.2", "V11", "V11.1", "V11.2", "V11.3", "V12", "V12.1", "V12.2", null};
 
     public static class VERSION {
-        public static final String RELEASE = "V12.1";
+        public static final String RELEASE = SystemProperties.get("ro.build.version.oplusrom", "V12.1");
         public static final int SDK_VERSION = getOplusOSVERSION();
-        public static final int SDK_SUB_VERSION = 19;
+        public static final int SDK_SUB_VERSION = SystemProperties.getInt("ro.build.version.oplus.sub_api", 19);
     }
 
     public static int getOplusOSVERSION() {
+        int apiVersion = SystemProperties.getInt("ro.build.version.oplus.api", 0);
+        if (apiVersion > 33) {
+            return apiVersion;
+        }
         for (int i = VERSIONS.length - 2; i >= 0; i--) {
             if (!TextUtils.isEmpty(VERSION.RELEASE) && VERSION.RELEASE.startsWith(VERSIONS[i])) {
                 return i + 1;
@@ -81,6 +85,6 @@ public class OplusBuild {
     }
 
     public static String getVersionProp(String property) {
-        return "V12.1";
+        return SystemProperties.get("ro.build.version.oplusrom", "V12.1");
     }
 }
