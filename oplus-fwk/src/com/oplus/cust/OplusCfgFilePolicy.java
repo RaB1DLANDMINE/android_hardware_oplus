@@ -16,16 +16,21 @@ public class OplusCfgFilePolicy {
     }
 
     public static List<String> getCfgLevelList(String configName, int slot) {
-        if (configName == null || configName.isEmpty()) {
+        if (configName == null) {
             return Collections.emptyList();
         }
 
-        File file = new File(configName);
-        if (file.exists()) {
-            return Collections.singletonList(file.getAbsolutePath());
+        ArrayList<String> result = new ArrayList<>();
+        String sub = configName.startsWith("/") ? configName : "/" + configName;
+        String[] roots = {"/system_ext", "/product", "/system", "/vendor", "/odm"};
+        for (String root : roots) {
+            File dir = new File(root + sub);
+            if (dir.isDirectory()) {
+                result.add(dir.getAbsolutePath());
+            }
         }
 
-        return Collections.emptyList();
+        return result;
     }
 
     public static List<String> getCfgFileList(String configName, String dir, int slot) {
