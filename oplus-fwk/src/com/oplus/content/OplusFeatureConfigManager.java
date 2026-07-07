@@ -51,5 +51,7 @@ public class OplusFeatureConfigManager {
         default void onFeatureUpdate(List<String> list, int featureID) {}
     }
 
-
+    public boolean isPermit(String feature) {
+        return true;
+    }
 }
