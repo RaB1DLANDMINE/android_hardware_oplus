@@ -8,6 +8,8 @@ package com.oplus.osense;
 import android.os.Bundle;
 import android.view.MotionEvent;
 
+import com.oplus.osense.info.OsenseSaRequest;
+
 public class OsenseResClient {
     public static OsenseResClient get(Class clazz) {
         return new OsenseResClient();
@@ -18,6 +20,10 @@ public class OsenseResClient {
     public void releaseSysResource(int eventId) {}
 
     public long osenseSetSceneAction(Object request) {
+        return 0L;
+    }
+
+    public long osenseSetSceneAction(OsenseSaRequest request) {
         return 0L;
     }
 

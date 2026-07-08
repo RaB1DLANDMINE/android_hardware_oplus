@@ -1,5 +1,7 @@
 package com.oplus.multiapp;
 
+import com.oplus.wrapper.content.pm.UserInfo;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -65,6 +67,10 @@ public class OplusMultiAppManager {
     }
 
     public List<String> getMultiAppList(int type) {
+        return Collections.emptyList();
+    }
+
+    public List<UserInfo> getMultiAppUserInfoList() {
         return Collections.emptyList();
     }
 
