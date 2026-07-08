@@ -35,10 +35,21 @@ public class OplusPlatformLevelUtils {
     }
 
     public int getPlatformAnimationLevel() {
-        return SystemProperties.getInt("ro.oplus.animationlevel", 0);
+        int animationLevel = SystemProperties.getInt("ro.oplus.animationlevel", 0);
+        if (animationLevel >= LEVEL_LOW && animationLevel <= LEVEL_HIGH) {
+            return animationLevel;
+        }
+        if (IS_LIGHT_OS) {
+            return LEVEL_LOW;
+        }
+        return LEVEL_HIGH;
     }
 
     public int getPlatformGaussianLevel() {
-        return SystemProperties.getInt("ro.oplus.gaussianlevel", 0);
+        int gaussianLevel = SystemProperties.getInt("ro.oplus.gaussianlevel", 0);
+        if (gaussianLevel >= LEVEL_LOW && gaussianLevel <= LEVEL_HIGH) {
+            return gaussianLevel;
+        }
+        return LEVEL_HIGH;
     }
 }
