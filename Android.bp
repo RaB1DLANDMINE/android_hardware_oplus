@@ -1,0 +1,28 @@
+//
+// SPDX-FileCopyrightText: 2022-2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+
+soong_namespace {
+}
+
+prebuilt_hidl_interfaces {
+    name: "hidl_oplus_cameraextension_interface",
+    interfaces: [
+        "vendor.oplus.hardware.cameraextension@1.0::ICameraExtensionService",
+    ],
+}
+
+prebuilt_hidl_interfaces {
+    name: "hidl_pixelworks_feature_interface",
+    interfaces: [
+        "vendor.pixelworks.hardware.feature@1.0::IIrisFeature",
+    ],
+}
+
+prebuilt_hidl_interfaces {
+    name: "hidl_zeku_explorer_interface",
+    interfaces: [
+        "vendor.zeku.hardware.explorer@1.0::IMmsProvider",
+    ],
+}

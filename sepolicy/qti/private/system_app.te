@@ -1,0 +1,2 @@
+# Allow Settings to pass the selected touch polling mode to the vendor touch HAL.
+set_prop(system_app, system_oplus_touch_prop)
