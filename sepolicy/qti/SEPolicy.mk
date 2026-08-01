@@ -29,4 +29,7 @@ SYSTEM_EXT_PUBLIC_SEPOLICY_DIRS += \
     hardware/oplus/sepolicy/qti/public/common-um
 endif
 
-include device/lineage/sepolicy/libperfmgr/sepolicy.mk
+# De-Lineage (AOSP base): guarded include. device/lineage/sepolicy isn't synced
+# on our AOSP + Lineage-build-tools base. Skipped if absent -> may cause libperfmgr
+# power-HAL SELinux denials at boot (fix later via audit2allow).
+-include device/lineage/sepolicy/libperfmgr/sepolicy.mk
